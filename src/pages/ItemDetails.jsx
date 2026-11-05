@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState } from "react";
 import EthImage from "../images/ethereum.svg";
 import { Link, useParams } from "react-router-dom";
 import Skeleton from "../components/UI/Skeleton";
@@ -9,13 +9,17 @@ const ItemDetails = () => {
   const [nftItem, setNftItem] = useState("");
   const id = useParams().id;
 
-  const getNftItem = async () => {
-    const response = await axios.get(
-      `https://us-central1-nft-cloud-functions.cloudfunctions.net/itemDetails?nftId=${id}`
-    );
+  const getNftItem = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `https://us-central1-nft-cloud-functions.cloudfunctions.net/itemDetails?nftId=${id}`
+      );
 
-    setNftItem(response.data);
-  };
+      setNftItem(response.data);
+    } catch (error) {
+      console.error("Error fetching NFT item:", error);
+    }
+  }, [id]);
 
   useEffect(() => {
     new WOW.WOW({
@@ -24,7 +28,7 @@ const ItemDetails = () => {
 
     window.scrollTo(0, 0);
     getNftItem();
-  }, []);
+  }, [getNftItem]);
   return (
     <div id="wrapper">
       <div className="no-bottom no-top" id="content">
