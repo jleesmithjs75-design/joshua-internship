@@ -4,7 +4,7 @@ import AuthorItems from "../components/author/AuthorItems";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Skeleton from "../components/UI/Skeleton";
-
+import WOW from "wowjs";
 
 const Author = () => { 
   const [authorData, setAuthorData] = useState(null);
@@ -12,22 +12,18 @@ const Author = () => {
   const id = useParams().id;
  
   const getAuthorData = useCallback(async () => {
-    try {
-      const response = await axios.get(
+   const response = await axios.get(
         `https://us-central1-nft-cloud-functions.cloudfunctions.net/authors?author=${id}`
       );
-      if (response.data && response.data.length > 0) {
-        setAuthorData(response.data[0]);
-      } else {
-      setAuthorData(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching author data:", error);
-    }
-  }, [id]);
+      setAuthorData(response.data)
+      }, [id]);
  
 
   useEffect(() => {
+     new WOW.WOW({
+      live: false,
+    }).init();
+
     window.scrollTo(0, 0);
     getAuthorData();
   }, [getAuthorData]);
