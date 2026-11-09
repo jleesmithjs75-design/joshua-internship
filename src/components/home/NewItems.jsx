@@ -36,9 +36,12 @@ const CountDown = ({ expiryDate }) => {
     return () => clearInterval(timer);
   }, [expiryDate]);
 
-  return <div className="nft__item_expire">{timeLeft}</div>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <div className="de_countdown_text">{timeLeft}</div>
+    </div>
+  );
 };
-
 
 const NewItems = () => {
   const [newItems, setNewItems] = useState([]);

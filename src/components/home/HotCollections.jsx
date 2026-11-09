@@ -4,6 +4,8 @@ import OwlCarousel from "react-owl-carousel";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Skeleton from "../UI/Skeleton";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const HotCollections = () => {
 const [hotCollections, setHotCollections] = useState([]);
@@ -13,18 +15,21 @@ const options = {
     nav: true,
     responsive: {
       0: {
-        items: 1,
+        items: 1
       },
       600: {
-        items: 2,
+        items: 2
       },
       900: {
-        items: 3,
+        items: 3
       },
       1200: {
-        items: 4,
-      },
+        items: 4
+      }
     },
+    onTranslated: () => {
+      AOS.refresh();
+    }
   };
    
 const getExploreData = async () => {
@@ -36,9 +41,21 @@ const getExploreData = async () => {
   };
 
   useEffect(() => {
+    AOS.init({
+      once: false, 
+      mirror:true,         
+      duration: 1000,      
+    });
     getExploreData();
   }, []);
  
+  useEffect(() => {
+    if (hotCollections.length > 0) {
+        setTimeout(() => {
+        AOS.refresh();
+      }, 150);
+    }
+  }, [hotCollections]);
 
 return (
     <section id="section-collections" className="no-bottom">
@@ -54,7 +71,11 @@ return (
           {hotCollections.length ? (
             <OwlCarousel className="owl-theme" {...options}>
               {hotCollections.map((item, index) => (
-                <div className="nft_coll" key={index}>
+                <div className="nft_coll"
+                 key={index}
+                 data-aos="fade-up" 
+                  data-aos-delay={index * 50} 
+                   >
                   <div className="nft_wrap">
                     <Link to={`/item-details/${item.nftId}`}>
                       <img

@@ -2,33 +2,60 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Skeleton from "../UI/Skeleton";
 import axios from "axios";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
-const ExploreItems = () => {
-  const [itemCount, setItemCount] = useState(8);
-  const [exploreItems, setExploreItems] = useState([]);
-  const [skeletonLoading, setSkeletonLoading] = useState(true);
 
+  const ExploreItems = () => {
+    const [itemCount, setItemCount] = useState(8);
+    const [exploreItems, setExploreItems] = useState([]);
+    const [skeletonLoading, setSkeletonLoading] = useState(true);
+    
   const getExploreData = async () => {
+    setSkeletonLoading(true);
+    try {
     const response = await axios.get(
       `https://us-central1-nft-cloud-functions.cloudfunctions.net/explore`
     );
-    setExploreItems(response.data);
+    setExploreItems([...response.data, ...response.data]);
+  } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setSkeletonLoading(false);
+    }
   };
 
+
   async function filterItems(filter) {
-    setSkeletonLoading(false);
+    try{
+    setSkeletonLoading(true);
     const response = await axios.get(
       `https://us-central1-nft-cloud-functions.cloudfunctions.net/explore?filter=${filter}`
     );
 
-    setExploreItems(response.data);
-    setSkeletonLoading(true);
+    setExploreItems([...response.data, ...response.data]);
+    setSkeletonLoading(false);
+   } catch (error) {
+      console.error("Error filtering data:", error);
+    } finally {
+      setSkeletonLoading(false);
+    }
   }
 
   useEffect(() => {
+    AOS.init({
+      once: false,
+      mirror: true,
+      duration: 800,
+    });
     getExploreData();
   }, []);
-
+if (exploreItems.length > 0) {
+      setTimeout(() => {
+        AOS.refresh();
+      }, 100);
+    }
+  
   return (
     <>
       <div>
@@ -43,12 +70,15 @@ const ExploreItems = () => {
           <option value="likes_high_to_low">Most liked</option>
         </select>
       </div>
-      {exploreItems.length && skeletonLoading ? (
+
+       <div className="row" style={{ width: "100%", display: "flex", flexWrap: "wrap" }}></div>
+        {exploreItems.length > 0 && !skeletonLoading ? (
         exploreItems.slice(0, itemCount).map((item, index) => (
           <div
             key={index}
             className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
             style={{ display: "block", backgroundSize: "cover" }}
+             data-aos="fade-up"
           >
             <div className="nft__item">
               <div className="author_list_pp">
@@ -56,8 +86,9 @@ const ExploreItems = () => {
                   to={`/author/${item.authorId}`}
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
-                >
-                  <img className="lazy" src={item.authorImage} alt="" />
+                  title={item.authorName}
+                  >
+                   <img className="lazy" src={item.authorImage} alt="" />
                   <i className="fa fa-check"></i>
                 </Link>
               </div>
@@ -96,18 +127,46 @@ const ExploreItems = () => {
           ))}
         </>
       )}
-      <div className="col-md-12 text-center">
+
+      
+      {exploreItems.length > 0 && itemCount < exploreItems.length && (
+                <div className="col-md-12 text-center" style={{ display: "block", marginTop: "30px", marginBottom: "30px", width: "100%" }}>
+          <button
+          onClick={() => setItemCount((prev) => Math.min(prev + 4, 16))}
+          id="loadmore"
+          className="btn-main lead"
+          data-aos="zoom-in" 
+          style={{
+            background: "#8364e2",
+            color: "#ffffff",
+            padding: "10px 30px",
+            borderRadius: "6px",
+            border: "none",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            display: itemCount >= 16 ? "none" : "inline-block"
+          }}
+        >
+          Load more
+        </button>
+        </div>
+      )}
+
+
+      {/*<div className="col-md-12 text-center">
         {itemCount !== 16 && (
           <Link
             onClick={() => setItemCount(itemCount + 4)}
-            to=""
+            to="#"
             id="loadmore"
-            className="btn-main wow fadeInUp lead"
-          >
+            className="btn-main lead"
+            data-aos="fade-up"     
+          >      
             Load more
           </Link>
-        )}
-      </div>
+        )} 
+      </div> */}
     </>
   );
 };

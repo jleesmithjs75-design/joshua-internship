@@ -1,57 +1,70 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import AuthorImage from "../../images/author_thumbnail.jpg";
 
 const AuthorItems = ({ authorData }) => {
+  const nftCollection = authorData?.nftCollection || [];
+  const authorImage = authorData?.authorImage || "";
+  const authorId = authorData?.id || "";
 
-    return (
+  return (
     <div className="de_tab_content">
       <div className="tab-1">
         <div className="row">
-          {authorData?.nftCollection?.map((item, index) => (
-            <div className="col-lg-3 col-md-6 col-sm-6 col-xs-12" key={index}>
+          {nftCollection?.map((item, index) => (
+            <div
+              className="col-lg-3 col-md-6 col-sm-6 col-xs-12"
+              key={`${item.nftId || index}`}
+            >
               <div className="nft__item">
-                <div className="author_list_pp">
-                  <Link to="">
-                    <img className="lazy" src={AuthorImage} alt="" />
+                <div className="author_list_pp"
+                style={{ zIndex: 10, position: "relative" }}
+                >
+                  <Link
+                    to={`/item-details/${item.nftId}`}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title={item.authorName}
+                  >
+                    <img className="lazy" src={authorImage} alt="" />
                     <i className="fa fa-check"></i>
                   </Link>
                 </div>
-                <div className="nft__item_wrap">
-                  <div className="nft__item_extra">
-                    <div className="nft__item_buttons">
-                      <button>Buy Now</button>
-                      <div className="nft__item_share">
-                        <h4>Share</h4>
-                        <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                          <i className="fa fa-facebook fa-lg"></i>
-                        </a>
-                        <a href="https://twitter.com" target="_blank" rel="noreferrer">
-                          <i className="fa fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="https://email.com" target="_blank" rel="noreferrer">
-                          <i className="fa fa-envelope fa-lg"></i>
-                        </a>
-                      </div>
+
+                <div className="nft__item_extra">
+                  <div className="nft__item_buttons">
+                    <button>Buy Now</button>
+                    <div className="nft__item_share">
+                      <h4>Share</h4>
+                      <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                        <i className="fa fa-facebook fa-lg"></i>
+                      </a>
+                      <a href="https://twitter.com" target="_blank" rel="noreferrer">
+                        <i className="fa fa-twitter fa-lg"></i>
+                      </a>
+                      <a href="https://email.com" target="_blank" rel="noreferrer">
+                        <i className="fa fa-envelope fa-lg"></i>
+                      </a>
                     </div>
                   </div>
-                  <Link to={`/item-details/${item.nftId}`}>
-                    <img
-                      src={item.Image}
-                      className="lazy nft__item_preview"
-                      alt=""
-                    />
-                  </Link>
                 </div>
-                <div className="nft__item_info">
-                  <Link to={`/item-details/${item.nftId}`}>
-                    <h4>{item.title}</h4>
-                  </Link>
-                  <div className="nft__item_price">2.52 ETH</div>
-                  <div className="nft__item_like">
-                    <i className="fa fa-heart"></i>
-                    <span>{item.likes}</span>
-                  </div>
+
+                <Link to={`/item-details/${item.nftId}`}>
+                  <img
+                    src={item.nftImage}
+                    className="lazy nft__item_preview"
+                    alt=""
+                  />
+                </Link>
+              </div>
+
+              <div className="nft__item_info">
+                <Link to={`/item-details/${item.nftId}`}>
+                  <h4>{item.title}</h4>
+                </Link>
+                <div className="nft__item_price">{item.price}ETH</div>
+                <div className="nft__item_like">
+                  <i className="fa fa-heart"></i>
+                  <span>{item.likes}</span>
                 </div>
               </div>
             </div>

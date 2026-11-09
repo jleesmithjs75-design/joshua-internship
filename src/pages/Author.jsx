@@ -6,21 +6,26 @@ import axios from "axios";
 import Skeleton from "../components/UI/Skeleton";
 import WOW from "wowjs";
 
-const Author = () => { 
-  const [authorData, setAuthorData] = useState(null);
+ const Author = () => {
+  const [authorData, setAuthorData] = useState("");
   const [isFollowing, setIsFollowing] = useState(false);
-  const id = useParams().id;
- 
+  const { id } = useParams();
+
   const getAuthorData = useCallback(async () => {
-   const response = await axios.get(
-        `https://us-central1-nft-cloud-functions.cloudfunctions.net/authors?author=${id}`
-      );
-      setAuthorData(response.data)
-      }, [id]);
- 
+    if (!id) return;
+    try {
+    const response = await axios.get(
+      `https://us-central1-nft-cloud-functions.cloudfunctions.net/authors?author=${id}`
+    );
+
+    setAuthorData(response.data);
+     } catch (error) {
+      console.error("Error fetching author data:", error);
+    }
+  }, [id]);
 
   useEffect(() => {
-     new WOW.WOW({
+    new WOW.WOW({
       live: false,
     }).init();
 
@@ -125,18 +130,7 @@ const Author = () => {
 
               <div className="col-md-12">
                 <div className="de_tab tab_simple">
-                  {authorData ? (
                   <AuthorItems authorData={authorData} />
-                  ) : (
-                    <div className="row">
-                      {new Array(8).fill(0).map((_, index) => (
-                        <div className="col-lg-3 col-md-6 col-sm-6 col-xs-12" key={index}>
-                          <Skeleton width="100%" height="400px" borderRadius="8px" />
-                        </div>
-                      ))}
-                    </div>
-                  )}                      
-                       
                 </div>
               </div>
             </div>
