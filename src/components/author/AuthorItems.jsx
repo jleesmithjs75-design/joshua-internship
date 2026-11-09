@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 const AuthorItems = ({ authorData }) => {
   const nftCollection = authorData?.nftCollection || [];
   const authorImage = authorData?.authorImage || "";
-  const authorId = authorData?.id || "";
-
+  
   return (
     <div className="de_tab_content">
       <div className="tab-1">
